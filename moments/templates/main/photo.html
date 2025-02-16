@@ -9,11 +9,18 @@
 <div class="row">
   <div class="col-lg-8">
     <div class="photo">
-      <a href="{{ url_for('.get_image', filename=photo.filename) }}" target="_blank">
-        <img class="img-fluid" src="{{ url_for('.get_image', filename=photo.filename_m) }}">
-      </a>
-      <span class="photo-bottom"></span>
-    </div>
+      <div class="photo">
+        <a href="{{ url_for('.get_image', filename=photo.filename) }}" target="_blank">
+          <img class="img-fluid" src="{{ url_for('.get_image', filename=photo.filename_m) }}" alt="{{ photo.alt_text }}">
+        </a>
+        <span class="photo-bottom"></span>
+      </div>
+      
+      <p><strong>AI Description:</strong> {{ photo.alt_text }}</p>
+      
+      {% if photo.tags %}
+          <p><strong>Tags:</strong> {{ photo.tags }}</p>
+      {% endif %}
     {% if current_user.is_authenticated %}
       {% if current_user.is_collecting(photo) %}
       <form class="inline" method="post" action="{{ url_for('main.uncollect', photo_id=photo.id) }}">

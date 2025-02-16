@@ -291,6 +291,8 @@ class Photo(db.Model):
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc), index=True)
     can_comment: Mapped[bool] = mapped_column(default=True)
     flag: Mapped[int] = mapped_column(default=0)
+    alt_text = db.Column(db.String(512))  # New AI-generated alternative text
+    
 
     author_id: Mapped[int] = mapped_column(ForeignKey('user.id', ondelete='CASCADE'))
 
@@ -326,7 +328,7 @@ class Tag(db.Model):
 
     @property
     def photos_count(self):
-        return db.session.scalar(select(func.count(photo_tag.c.photo_id)).filter_by(tag_id=self.id))
+        return db.session.scalar(select(func.count(photo_tag.c.photo_id)).filter_by(tag_id=self.id)) or 0
 
     def __repr__(self):
         return f'Tag {self.id}: {self.name}'

@@ -14,11 +14,13 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "pillow>=10.2.0",
     "bootstrap-flask>=2.3.3",
-    "flask>=3.0.2",
+    "flask>=3.1.0",
     "flask-whooshee>=0.9.1",
     "flask-avatars>=0.2.3",
     "pyjwt>=2.8.0",
     "email-validator>=2.1.0.post1",
+    "lorem>=0.1.1",
+    "faker>=36.1.1",
 ]
 requires-python = ">=3.9"
 readme = "README.md"

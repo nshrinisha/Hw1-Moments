@@ -2,6 +2,10 @@ from flask import Blueprint, abort, current_app, flash, redirect, render_templat
 from flask_login import current_user, login_required
 from sqlalchemy import func, select
 from sqlalchemy.orm import with_parent
+import os
+import requests
+from dotenv import load_dotenv
+import json  # Add this at the top
 
 from moments.core.extensions import db
 from moments.decorators import confirm_required, permission_required
@@ -11,6 +15,39 @@ from moments.notifications import push_collect_notification, push_comment_notifi
 from moments.utils import flash_errors, redirect_back, rename_image, resize_image, validate_image
 
 main_bp = Blueprint('main', __name__)
+
+load_dotenv()
+
+def generate_alt_text(image_path):
+    """Send image to Azure Vision API to generate a description."""
+    headers = {
+        'Ocp-Apim-Subscription-Key': os.getenv("AZURE_API_KEY"),
+        'Content-Type': 'application/octet-stream'
+    }
+    params = {'visualFeatures': 'Description'}
+    
+    with open(image_path, 'rb') as img_data:
+        response = requests.post(os.getenv("AZURE_ENDPOINT"), headers=headers, params=params, data=img_data)
+
+    response_json = response.json()
+    print("Azure Vision API Response:", json.dumps(response_json, indent=2))  # Debugging print
+    
+    if "description" in response_json and "captions" in response_json["description"]:
+        return response_json["description"]["captions"][0]["text"]
+    
+    return "No description available."
+
+
+def generate_image_tags(image_path):
+    """Send image to Azure Vision API for object detection."""
+    headers = {'Ocp-Apim-Subscription-Key': os.getenv("AZURE_API_KEY"), 'Content-Type': 'application/octet-stream'}
+    params = {'visualFeatures': 'Tags'}
+    
+    with open(image_path, 'rb') as img_data:
+        response = requests.post(os.getenv("AZURE_ENDPOINT"), headers=headers, params=params, data=img_data)
+    
+    response_json = response.json()
+    return [tag['name'] for tag in response_json.get("tags", [])]
 
 
 @main_bp.route('/')
@@ -129,15 +166,40 @@ def upload():
         f = request.files.get('file')
         if not validate_image(f.filename):
             return 'Invalid image.', 400
+        
         filename = rename_image(f.filename)
-        f.save(current_app.config['MOMENTS_UPLOAD_PATH'] / filename)
-        filename_s = resize_image(f, filename, current_app.config['MOMENTS_PHOTO_SIZES']['small'])
-        filename_m = resize_image(f, filename, current_app.config['MOMENTS_PHOTO_SIZES']['medium'])
+        image_path = current_app.config['MOMENTS_UPLOAD_PATH'] / filename
+        f.save(image_path)
+        
+        # Generate AI alt text & tags
+        alt_text = generate_alt_text(image_path)
+        tags = generate_image_tags(image_path)
+
+        print(f"Generated Alt Text: {alt_text}")  # Debugging print
+        print(f"Generated Tags: {tags}")  # Debugging print
+        
+        # Save to database
         photo = Photo(
-            filename=filename, filename_s=filename_s, filename_m=filename_m, author=current_user._get_current_object()
+            filename=filename, 
+            filename_s=resize_image(f, filename, current_app.config['MOMENTS_PHOTO_SIZES']['small']),
+            filename_m=resize_image(f, filename, current_app.config['MOMENTS_PHOTO_SIZES']['medium']),
+            alt_text=alt_text,  # Store alt text
+            author=current_user._get_current_object()
         )
+
+        # ✅ Convert tag names into `Tag` objects & associate with `photo`
+        for tag_name in tags:
+            tag = db.session.scalar(select(Tag).filter_by(name=tag_name))
+            if tag is None:
+                tag = Tag(name=tag_name)
+                db.session.add(tag)
+            photo.tags.append(tag)
+
         db.session.add(photo)
         db.session.commit()
+
+        print(f"Saved to Database - Alt Text: {photo.alt_text}")  # Final confirmation
+    
     return render_template('main/upload.html')
 
 
@@ -314,18 +376,31 @@ def new_tag(photo_id):
 
     form = TagForm()
     if form.validate_on_submit():
+        print("✅ Form Submitted Successfully")
         for name in form.tag.data.split():
+            print(f"🔎 Checking for tag: {name}")
             tag = db.session.scalar(select(Tag).filter_by(name=name))
+
             if tag is None:
+                print(f"🆕 Tag '{name}' does not exist, creating new tag...")
                 tag = Tag(name=name)
                 db.session.add(tag)
                 db.session.commit()
+                print(f"✅ New tag '{name}' added to database.")
+
             if tag not in photo.tags:
+                print(f"➕ Adding tag '{tag.name}' to photo {photo.id}")
                 photo.tags.append(tag)
                 db.session.commit()
+                print(f"✅ Tag '{tag.name}' successfully added to photo {photo.id}")
+
         flash('Tag added.', 'success')
 
-    flash_errors(form)
+    else:
+        print("❌ Form validation failed!")
+        flash_errors(form)
+
+    print(f"🔄 Redirecting to /photo/{photo_id}")
     return redirect(url_for('.show_photo', photo_id=photo_id))
 
 
