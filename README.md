@@ -85,25 +85,6 @@ flask run
 Then, open:  
 [http://127.0.0.1:5000](http://127.0.0.1:5000)  
 
-## How to Use Moments  
-
-### Upload and Organize Your Photos  
-1. Click "Upload"  
-2. Select an image  
-3. AI automatically generates alt text and searchable tags  
-
-### Find Photos Instantly  
-- Type a keyword into the search bar to find images based on AI-generated tags  
-- Example: Searching "beach" will show all beach-related photos  
-
-### Edit and Customize Tags  
-- Open an image  
-- Click "Add Tags"  
-- Enter custom tags and save  
-
-### Check AI-Generated Descriptions  
-- Right-click an image → Click "Inspect Element"  
-- Locate the `<img>` tag to see the **alt attribute**  
 
 ## Try Moments Without an Account  
 
@@ -112,14 +93,6 @@ Use this test login to explore:
 - **Email:** admin@helloflask.com  
 - **Password:** moments  
 
-## Technology Stack
-
-- **Python & Flask** – Fast and lightweight backend  
-- **SQLAlchemy** – Manages the database efficiently  
-- **Azure Vision API** – AI-powered image recognition  
-- **Bootstrap 5** – Clean and responsive UI  
-- **WTForms** – Secure and user-friendly form handling  
-- **Flask-Login** – Authentication and session management  
 
 ## Challenges and How We Solved Them  
 
@@ -141,11 +114,6 @@ Use this test login to explore:
 - All sensitive data is managed through **environment variables**.  
 - User input is **sanitized** to prevent security risks.  
 
-## What’s Next for Moments?  
-
-- **Optimized API Calls** – Reduce unnecessary requests for better performance.  
-- **Better Scalability** – Migrate image storage to AWS S3 or Azure Blob.  
-- **Improved AI Tagging** – Use machine learning to refine tag accuracy.  
 
 ## Scaling for the Future  
 
@@ -160,7 +128,4 @@ Use this test login to explore:
 ### Keeping the App Fast  
 - **Issue:** Searching through large databases can slow performance.  
 - **Solution:** Use indexing and caching for faster lookups.  
-
-Contributed by **Shrinisha Nirmalkumar**  
-Email: [snirm@uic.edu](mailto:snirm@uic.edu)  
-GitHub: [nshrinisha](https://github.com/nshrinisha)  
+ 
