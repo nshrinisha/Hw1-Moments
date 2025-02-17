@@ -94,14 +94,14 @@ Use this test login to explore:
 - **Password:** moments  
 
 
-Potential Harms & Mitigations
-1.	Inaccurate or Misleading Alt Text 
+## Potential Harms & Mitigations
+### Inaccurate or Misleading Alt Text 
 - **Harm:** AI-generated descriptions tend to misinterpret photos, resulting in inaccurate alt text that can be confusing to screen reader-dependent visually impaired users. For example, a dog might be labeled as a wolf, altering its intended meaning.
 - **Solution:** To ensure accuracy, let users adjust AI-generated alt text before being published. Additionally, implement confidence thresholds where AI prompts users to verify descriptions if uncertainty is high. Also, a feedback system can enhance predictions for the future.
-2.	AI recognition being biased
+### AI recognition being biased
 - **Harm:**  AI models that have been trained on datasets that are not diverse may have trouble recognizing cultural, racial, or regional differences, which could result in the incorrect classification or elimination of items or individuals.
 - **Solution:** The way to go is to expand the range of training datasets and include a variety of situations and demographics. Over time, eliminate bias by retraining models based on identified inaccuracies and enabling manual tagging to allow users to fix errors.
-3.	AI Processing May Slow Down (Scalability issues)
+### AI Processing May Slow Down (Scalability issues)
 - **Harm:** When many users upload images at once, Azure Vision API can slow down, causing delays in generating alt text and search results. High traffic might also hit API rate limits, making some images wait in a queue, affecting real-time user experience.
 - **Solution:** Cache AI results to avoid unnecessary API calls, making searches faster. Use asynchronous processing to handle uploads in the background, preventing delays. AWS Lambda and other cloud scaling solutions can be used to effectively handle unexpected increases in demand.
 
