@@ -112,7 +112,7 @@ Use this test login to explore:
 - **Email:** admin@helloflask.com  
 - **Password:** moments  
 
-## What’s Under the Hood?  
+## Technology Stack
 
 - **Python & Flask** – Fast and lightweight backend  
 - **SQLAlchemy** – Manages the database efficiently  
@@ -161,8 +161,6 @@ Use this test login to explore:
 - **Issue:** Searching through large databases can slow performance.  
 - **Solution:** Use indexing and caching for faster lookups.  
 
-## About the Developer  
-
-Developed by **Shrinisha Nirmalkumar**  
+Contributed by **Shrinisha Nirmalkumar**  
 Email: [snirm@uic.edu](mailto:snirm@uic.edu)  
 GitHub: [nshrinisha](https://github.com/nshrinisha)  
