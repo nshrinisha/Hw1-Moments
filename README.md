@@ -86,7 +86,7 @@ Then, open:
 [http://127.0.0.1:5000](http://127.0.0.1:5000)  
 
 
-## Try Moments Without an Account  
+## Try Moments with test Account  
 
 Use this test login to explore:  
 
